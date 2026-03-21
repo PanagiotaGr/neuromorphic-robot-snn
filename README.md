@@ -1,4 +1,4 @@
-# Neuromorphic Control of Embodied Agents:
+# 📄 Neuromorphic Control of Embodied Agents
 
 ## A Comparative Study of Spiking and Artificial Neural Networks
 
@@ -6,114 +6,149 @@
 
 ## Abstract
 
-This project investigates the use of **Spiking Neural Networks (SNNs)** for control in embodied robotic systems, in comparison to conventional **Artificial Neural Networks (ANNs)**. While ANNs typically excel in supervised learning benchmarks, their performance does not always translate to stable behavior in closed-loop environments.
+Spiking Neural Networks (SNNs) have emerged as a biologically inspired alternative to conventional Artificial Neural Networks (ANNs), offering intrinsic temporal dynamics and event-driven computation. Despite their theoretical advantages, their practical benefits in control systems remain underexplored.
 
-We construct a simulated robotic agent tasked with trajectory tracking using only local sensory input, and systematically evaluate both ANN and SNN controllers under varying environmental perturbations. Additionally, we explore the role of **temporal spike encoding**, **continuous control**, and **sensor degradation**.
+In this work, we investigate the performance of SNNs in a closed-loop robotic control task, comparing them against standard feedforward ANNs. We construct a simulated embodied agent tasked with trajectory tracking under partial observability and evaluate performance under various perturbations, including sensor noise, delay, and degradation.
 
-Our findings suggest that SNNs, despite lower offline accuracy, can exhibit superior robustness and stability in dynamical settings, highlighting the importance of temporal computation in control systems.
+Our results demonstrate that SNNs, while exhibiting lower supervised learning accuracy, can achieve superior robustness and stability in dynamical environments. This highlights a fundamental mismatch between offline evaluation metrics and real-world control performance, emphasizing the importance of temporal computation in embodied intelligence.
 
 ---
 
 ## 1. Introduction
 
-The dominant paradigm in modern machine learning relies on deep artificial neural networks trained via backpropagation. However, such models are inherently **static function approximators**, lacking explicit mechanisms for temporal state representation beyond architectural extensions (e.g., RNNs).
+Modern machine learning systems are predominantly based on deep artificial neural networks trained using gradient-based optimization. These models are highly effective at approximating static mappings between inputs and outputs. However, real-world agents operate in environments that evolve over time, where decisions must account for temporal dependencies and delayed feedback.
 
-In contrast, **Spiking Neural Networks (SNNs)** operate using discrete events in time and maintain internal dynamics through membrane potentials, making them inherently suited for **time-dependent processing** and **event-driven environments**.
+Spiking Neural Networks (SNNs) differ fundamentally from ANNs by incorporating time as a first-class computational dimension. Instead of continuous activations, SNNs communicate via discrete spike events and maintain internal state through membrane potentials. This enables them to naturally encode temporal information and operate in event-driven settings.
 
-This project explores the hypothesis:
+The central hypothesis of this work is:
 
-> *Temporal dynamics in SNNs provide advantages in closed-loop control tasks, particularly under uncertainty and delayed feedback.*
+> Temporal dynamics in SNNs provide advantages in closed-loop control tasks, particularly under uncertainty, noise, and delayed observations.
 
 ---
 
 ## 2. Problem Formulation
 
-We consider a robot navigating a 2D procedurally generated path. The system is defined as a **partially observable dynamical system**:
+We consider a robot navigating a two-dimensional track using only local sensor observations.
 
-* State: ( s_t = (x_t, y_t, \theta_t) )
-* Observation: ( o_t \in \mathbb{R}^n ) (sensor readings)
-* Action:
+### System Definition
 
-  * discrete: ( a_t \in {left, forward, right} )
-  * continuous: ( a_t \in [-1, 1] )
+```
+State:        s_t = (x_t, y_t, θ_t)
+Observation:  o_t ∈ ℝⁿ
+Action:       a_t ∈ [-1, 1]   (continuous steering)
+```
 
-The control objective is to minimize deviation from the track centerline while progressing forward.
+The system is **partially observable**, as the agent does not have access to global position or full environment information.
+
+### Objective
+
+```
+minimize   lateral deviation from track centerline
+maximize   forward progress
+```
+
+This defines a continuous control problem under uncertainty.
 
 ---
 
 ## 3. Methods
 
-### 3.1 Artificial Neural Network (ANN)
+## 3.1 Artificial Neural Network (ANN)
 
-A feedforward network:
+The ANN controller is a feedforward network:
 
-[
-f_{\theta}: \mathbb{R}^n \rightarrow \mathbb{R}^k
-]
+```
+f_θ: ℝⁿ → ℝ
+```
 
 * ReLU activations
-* Cross-entropy loss (discrete) or MSE (continuous)
-* No internal temporal state
+* Mean Squared Error (MSE) loss
+* No explicit temporal state
+
+This model approximates a static mapping:
+
+```
+o_t → a_t
+```
 
 ---
 
-### 3.2 Spiking Neural Network (SNN)
+## 3.2 Spiking Neural Network (SNN)
 
-We employ **Leaky Integrate-and-Fire (LIF)** neurons:
+### LIF Neuron Dynamics
 
-[
-\tau_m \frac{dV(t)}{dt} = -V(t) + I(t)
-]
+```
+tau_m * dV/dt = -V + I
+```
 
-A spike is emitted when:
-[
-V(t) \geq V_{th}
-]
+### Spike Condition
 
-Training is performed using **surrogate gradients**, enabling backpropagation through non-differentiable spike events.
+```
+V ≥ V_th  → spike
+```
 
-The network processes inputs over ( T ) discrete time steps:
-
-[
-o_t \rightarrow {s_t^{(1)}, s_t^{(2)}, ..., s_t^{(T)}}
-]
-
-Output is obtained via temporal aggregation:
-[
-\hat{y} = \sum_{t=1}^{T} s_t
-]
+The membrane potential integrates input over time, providing **implicit memory**.
 
 ---
 
-### 3.3 Spike Encoding
+### Temporal Processing
 
-We investigate three encoding strategies:
+The SNN processes each input across multiple time steps:
 
-* **Rate Coding**: spike probability proportional to input magnitude
-* **Latency Coding**: spike timing encodes value
-* **Population Coding**: distributed representation across neuron groups
+```
+o_t → {s₁, s₂, ..., s_T}
+```
 
-These affect how continuous sensor signals are transformed into spike trains.
+### Output Readout
+
+```
+a_t = tanh(W * s_mean)
+```
+
+where:
+
+```
+s_mean = average spike activity over time
+```
+
+Training is performed using **surrogate gradient methods**, allowing backpropagation through non-differentiable spike events.
 
 ---
 
-### 3.4 Continuous Control Extension
+## 3.3 Spike Encoding
 
-We extend the action space to:
+Continuous inputs must be transformed into spike trains.
 
-[
-a_t \in [-1, 1]
-]
+### Rate Coding
 
-representing steering angle.
+```
+spike probability ∝ input magnitude
+```
 
-For SNNs, regression is performed via a readout layer over accumulated spike activity:
+### Latency Coding
 
-[
-a_t = \tanh(W \cdot \bar{s})
-]
+```
+strong input → early spike
+weak input   → late spike
+```
 
-where ( \bar{s} ) is the average spike activity over time.
+### Population Coding
+
+```
+input → distributed representation across neuron populations
+```
+
+---
+
+## 3.4 Continuous Control
+
+Unlike classification-based control, we define a continuous action space:
+
+```
+a_t ∈ [-1, 1]
+```
+
+This formulation better reflects real-world robotic systems, where control signals are inherently continuous.
 
 ---
 
@@ -125,89 +160,109 @@ where ( \bar{s} ) is the average spike activity over time.
 * Randomized robot states
 * Teacher controller provides supervision
 
-### Evaluation Conditions
+### Perturbations
 
-* Gaussian sensor noise
-* Temporal delay
-* Sensor dropout
-* Sensor failure (dead channels)
+We evaluate robustness under:
+
+```
+• Gaussian noise
+• Temporal delay
+• Sensor dropout
+• Dead sensors
+```
 
 ### Metrics
 
-* Success rate
-* Mean lateral error
-* Maximum deviation
-* Episode duration
-* Control smoothness
-* Spike activity (SNN only)
+```
+success_rate
+mean_lateral_error
+max_lateral_error
+episode_length
+control_smoothness
+spike_activity (SNN)
+```
 
 ---
 
-## 5. Results and Analysis
+## 5. Results
 
-### 5.1 Offline vs Closed-loop Performance
+## 5.1 Offline vs Closed-loop Performance
 
-We observe a consistent mismatch:
+```
+ANN → higher supervised accuracy
+SNN → better control stability
+```
 
-* ANN achieves higher supervised accuracy
-* SNN demonstrates better stability in simulation
+This reveals a fundamental issue:
 
-This indicates that **classification accuracy is not a sufficient proxy** for control quality in dynamical systems.
-
----
-
-### 5.2 Robustness
-
-SNNs exhibit:
-
-* Improved tolerance to delayed observations
-* Graceful degradation under sensor corruption
-* More stable trajectories under noise
-
-This behavior is attributed to internal temporal integration.
+```
+offline accuracy ≠ closed-loop performance
+```
 
 ---
 
-### 5.3 Encoding Effects
+## 5.2 Robustness
 
-Performance varies significantly across encoding methods:
+SNNs demonstrate:
 
-* Rate coding: stable baseline
-* Latency coding: sensitive but expressive
-* Population coding: robust but higher dimensional
+```
+✓ improved tolerance to delay
+✓ stability under noise
+✓ graceful degradation under sensor failure
+```
 
-This confirms that **input representation is critical** in SNN systems.
+This is attributed to temporal integration and internal state dynamics.
 
 ---
 
-### 5.4 Continuous Control
+## 5.3 Encoding Analysis
 
-In continuous steering:
+Different encoding strategies significantly affect performance:
 
-* ANN produces smoother outputs initially
-* SNN develops adaptive temporal smoothing
-* Differences become more pronounced under noise
+```
+Rate coding       → stable baseline
+Latency coding    → high sensitivity
+Population coding → robust but higher complexity
+```
+
+---
+
+## 5.4 Continuous Control Behavior
+
+```
+ANN → smoother initial outputs
+SNN → adaptive temporal smoothing
+```
+
+Under perturbations, SNNs maintain more consistent trajectories.
 
 ---
 
 ## 6. Discussion
 
-This study highlights key limitations of standard evaluation practices:
+Traditional evaluation methods in machine learning emphasize static metrics such as classification accuracy. However, these metrics fail to capture the behavior of systems interacting with dynamic environments.
 
-* Static metrics (accuracy) fail to capture **closed-loop dynamics**
-* Temporal computation emerges as a crucial factor in control
+Control problems require:
 
-SNNs provide:
+```
+state evolution + temporal consistency
+```
 
-* implicit memory through membrane dynamics
-* event-driven computation
-* robustness in non-ideal conditions
+SNNs inherently provide:
 
-However, challenges remain:
+```
+• temporal integration
+• implicit memory
+• event-driven computation
+```
 
-* difficult training dynamics
-* sensitivity to hyperparameters
-* lack of standardized tools
+Despite these advantages, challenges remain:
+
+```
+• training instability
+• sensitivity to hyperparameters
+• limited software tooling
+```
 
 ---
 
@@ -215,19 +270,24 @@ However, challenges remain:
 
 We demonstrate that:
 
-> SNNs can outperform ANNs in embodied control tasks despite inferior offline metrics.
+```
+SNNs can outperform ANNs in embodied control tasks
+despite inferior offline performance metrics
+```
 
-This supports the broader view that:
+This supports a broader perspective:
 
-* intelligence in agents is not purely a function of static input-output mappings
-* but emerges from **interaction over time**
+```
+intelligence emerges from interaction over time
+not just static input-output mappings
+```
 
 ---
 
 ## 8. Future Work
 
 * Reinforcement learning with SNN policies
-* Neuromorphic hardware deployment
+* Deployment on neuromorphic hardware
 * Event-based vision integration
 * Multi-agent coordination
 * Energy-aware evaluation
@@ -236,9 +296,7 @@ This supports the broader view that:
 
 ## 9. Reproducibility
 
-All experiments can be reproduced via:
-
-```bash
+```
 python main.py
 python experiments_mode.py
 python encoding_study.py
@@ -250,18 +308,32 @@ python continuous_benchmark.py
 
 ## 10. Keywords
 
-Spiking Neural Networks, Neuromorphic Computing, Robotics, Control Systems, Temporal Dynamics, Embodied AI
+```
+Spiking Neural Networks
+Neuromorphic Computing
+Robotics
+Control Systems
+Temporal Dynamics
+Embodied AI
+```
 
 ---
 
 ## Author
 
-Student project in:
+Student Project in:
 
-* Machine Learning
-* Robotics
-* Neuromorphic Systems
+```
+Machine Learning
+Robotics
+Neuromorphic Systems
+```
 
 ---
 
-> This project serves as a bridge between machine learning and dynamical systems, emphasizing the importance of time in intelligent behavior.
+## Final Remark
+
+```
+This work highlights the importance of time in intelligent systems,
+bridging the gap between machine learning and dynamical control.
+```
