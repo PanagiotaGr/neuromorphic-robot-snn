@@ -1,4 +1,40 @@
 .venv/
 __pycache__/
 *.pyc
-outputs/
+
+# ignore model weights
+*.pt
+
+# ignore generated outputs by default
+outputs/*
+outputs_v2/*
+
+# keep selected result files
+!outputs/experiments/
+!outputs/encoding_study/
+!outputs/continuous_steering/
+!outputs/continuous_benchmark/
+
+!outputs/experiments/baseline_summary.csv
+!outputs/experiments/success_vs_noise.png
+!outputs/experiments/error_vs_noise.png
+!outputs/experiments/snn_ablation_success.png
+
+!outputs/encoding_study/encoding_test_accuracy.png
+!outputs/encoding_study/encoding_success_vs_noise.png
+!outputs/encoding_study/encoding_error_vs_noise.png
+
+!outputs/continuous_steering/continuous_training_loss.png
+!outputs/continuous_steering/continuous_trajectory_clean.png
+!outputs/continuous_steering/continuous_steering_signal_clean.png
+!outputs/continuous_steering/continuous_snn_clean.gif
+
+!outputs/continuous_benchmark/continuous_benchmark_summary.csv
+!outputs/continuous_benchmark/continuous_test_loss.png
+!outputs/continuous_benchmark/success_vs_noise.png
+!outputs/continuous_benchmark/mean_steps_by_condition.png
+
+!outputs_v2/training_accuracy_comparison.png
+!outputs_v2/training_loss_comparison.png
+!outputs_v2/trajectory_comparison_clean.png
+!outputs_v2/snn_demo_clean.gif
