@@ -320,13 +320,7 @@ Embodied AI
 ---
 
 ## Author
-
-Student Project in:
-
-```
-Machine Learning
-Robotics
-Neuromorphic Systems
+Panagiota Grosdouli
 ```
 
 ---
