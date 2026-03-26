@@ -321,13 +321,5 @@ Embodied AI
 
 ## Author
 Panagiota Grosdouli
-```
 
----
 
-## Final Remark
-
-```
-This work highlights the importance of time in intelligent systems,
-bridging the gap between machine learning and dynamical control.
-```
