@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this spiking neural network control framework or the comparative study, please cite it as follows."
+authors:
+  - family-names: "Grosdouli"
+    given-names: "Panagiota"
+title: "Neuromorphic Control of Embodied Agents: A Comparative Study of Spiking and Artificial Neural Networks"
+version: 1.0.0
+date-released: 2026-03-27
+url: "https://github.com/PanagiotaGr/neuromorphic-robot-snn"
