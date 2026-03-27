@@ -322,4 +322,15 @@ Embodied AI
 ## Author
 Panagiota Grosdouli
 
+## Citation
+
+If you use this work for research, please cite it:
+
+```bibtex
+@software{Grosdouli_SNN_Robotics_2026,
+  author = {Grosdouli, Panagiota},
+  title = {Neuromorphic Control of Embodied Agents: A Comparative Study of Spiking and Artificial Neural Networks},
+  year = {2026},
+  url = {[https://github.com/PanagiotaGr/neuromorphic-robot-snn](https://github.com/PanagiotaGr/neuromorphic-robot-snn)}
+}
 
