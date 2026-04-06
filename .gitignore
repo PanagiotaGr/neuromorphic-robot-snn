@@ -47,3 +47,6 @@ configs/*.yaml.bak
 !outputs_v2/trajectory_comparison_clean.png
 !outputs_v2/snn_demo_clean.gif
 
+outputs/
+venv/
+__pycache__/
