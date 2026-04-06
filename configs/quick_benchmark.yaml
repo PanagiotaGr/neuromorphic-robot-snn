@@ -1,0 +1,40 @@
+# Quick benchmark config - for fast results (5-10 minutes)
+# Use: python run.py --config configs/quick_benchmark.yaml
+
+data:
+  num_sensors: 9
+  n_train_tracks: 5      # Small for speed
+  n_test_tracks: 3       # Small for speed
+  samples_per_track: 100  # Reduced samples
+  lookahead: 0.85
+  sensor_arc_deg: 90.0
+  track_y_max: 40.0
+  line_sigma: 0.28
+
+model:
+  input_dim: 9
+  hidden_dim: 64        # Smaller model
+  output_dim: 3
+  beta: 0.92
+  snn_steps: 15         # Fewer timesteps
+  dropout: 0.0
+
+train:
+  batch_size: 64
+  ann_epochs: 3         # Very few epochs
+  snn_epochs: 4
+  lr: 0.001
+  gradient_clip: 1.0
+
+sim:
+  speed: 0.16
+  turn_rate: 0.11
+  max_steps: 340
+  failure_distance: 1.55
+
+experiment:
+  output_dir: "outputs/quick_benchmark"
+  experiment_name: "quick_benchmark_001"
+  log_level: "INFO"
+  save_plots: true
+  save_animations: false

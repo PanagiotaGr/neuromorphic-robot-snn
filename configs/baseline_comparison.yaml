@@ -1,0 +1,45 @@
+# Baseline comparison config - Good balance of speed and realism
+# Use: python run.py --config configs/baseline_comparison.yaml
+
+data:
+  num_sensors: 9
+  n_train_tracks: 15      # Moderate
+  n_test_tracks: 8
+  samples_per_track: 200  # Moderate
+  lookahead: 0.85
+  sensor_arc_deg: 90.0
+  track_y_max: 40.0
+  line_sigma: 0.28
+
+model:
+  input_dim: 9
+  hidden_dim: 96        # Standard size
+  output_dim: 3
+  beta: 0.92
+  snn_steps: 25
+  dropout: 0.0
+
+train:
+  batch_size: 96
+  ann_epochs: 10        # Enough to converge
+  snn_epochs: 12
+  lr: 0.001
+  lr_scheduler: "none"
+  gradient_clip: 1.0
+  early_stopping_patience: 5
+
+sim:
+  speed: 0.16
+  turn_rate: 0.11
+  max_steps: 340
+  failure_distance: 1.55
+  noise_std: 0.0
+  delay_steps: 0
+
+experiment:
+  output_dir: "outputs/baseline_comparison"
+  experiment_name: "baseline_comparison_001"
+  log_level: "INFO"
+  use_wandb: false
+  save_plots: true
+  save_animations: true
