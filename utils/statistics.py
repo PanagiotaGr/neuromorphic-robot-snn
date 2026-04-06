@@ -1,6 +1,6 @@
 """Statistical comparison between ANN and SNN performance"""
 import numpy as np
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
 from scipy import stats as scipy_stats
 
 
