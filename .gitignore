@@ -1,13 +1,17 @@
 .venv/
 __pycache__/
 *.pyc
+.cache/
 
 # ignore model weights
 *.pt
+*.pth
 
 # ignore generated outputs by default
 outputs/*
-outputs_v2/*
+configs/*.yaml.bak
+cache/
+wandb/
 
 # keep selected result files
 !outputs/experiments/
@@ -38,3 +42,4 @@ outputs_v2/*
 !outputs_v2/training_loss_comparison.png
 !outputs_v2/trajectory_comparison_clean.png
 !outputs_v2/snn_demo_clean.gif
+

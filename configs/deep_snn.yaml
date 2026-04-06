@@ -1,0 +1,35 @@
+# Deep SNN with BatchNorm and Dropout
+# Experiment: Test if deeper architecture improves performance
+
+model:
+  hidden_dim: 192
+  dropout: 0.1
+  use_batch_norm: true
+  beta: 0.93
+
+train:
+  ann_epochs: 25
+  snn_epochs: 30
+  batch_size: 96
+  lr: 0.001
+  lr_scheduler: "cosine"
+  gradient_clip: 1.0
+  early_stopping_patience: 10
+  mixed_precision: true
+
+encoding:
+  encoding_type: "rate"
+  snn_steps: 25
+
+data:
+  num_sensors: 9
+  n_train_tracks: 30
+  n_test_tracks: 12
+  samples_per_track: 450
+
+experiment:
+  experiment_name: "deep_snn_batchnorm"
+  log_level: "INFO"
+  use_wandb: false
+  save_plots: true
+  save_animations: true

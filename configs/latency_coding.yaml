@@ -1,0 +1,31 @@
+# Latency Coding Experiment
+# Test time-to-first-spike encoding for faster SNN inference
+
+model:
+  hidden_dim: 96
+  beta: 0.9
+  snn_steps: 25
+
+train:
+  ann_epochs: 20
+  snn_epochs: 20
+  batch_size: 96
+  lr: 0.001
+  lr_scheduler: "none"
+
+encoding:
+  encoding_type: "latency"
+  latency_time_window: 25
+  threshold: 0.15
+
+data:
+  num_sensors: 9
+  n_train_tracks: 30
+  n_test_tracks: 12
+  samples_per_track: 450
+
+experiment:
+  experiment_name: "latency_coding"
+  log_level: "INFO"
+  save_plots: true
+  save_animations: false
