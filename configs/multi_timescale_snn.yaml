@@ -1,0 +1,53 @@
+# Multi-Timescale Hierarchical SNN Experiment
+# DIFFERENT TIME CONSTANTS PER LAYER
+
+# Hypothesis: Hierarchical processing with varying time constants will
+# improve temporal credit assignment and enable multi-scale temporal learning.
+
+model:
+  # Deep hierarchical architecture
+  deep: true
+  hidden_dims: [96, 96, 96]  # 3 layers
+  time_constants: [0.90, 0.95, 0.99]  # Fast → slow integration (beta values)
+  # β = 0.90 → τ ≈ 10ms (fast, reflexes)
+  # β = 0.95 → τ ≈ 20ms (medium, sensorimotor)
+  # β = 0.99 → τ ≈ 100ms (slow, context/strategy)
+
+train:
+  ann_epochs: 25
+  snn_epochs: 40  # May need more epochs for temporal learning
+  batch_size: 96
+  lr: 0.001
+  lr_scheduler: "cosine"
+  gradient_clip: 1.0
+  early_stopping_patience: 10
+
+encoding:
+  encoding_type: "rate"
+  snn_steps: 30  # Longer temporal window for multi-timescale
+
+data:
+  num_sensors: 9
+  n_train_tracks: 30
+  n_test_tracks: 12
+  samples_per_track: 450
+
+sim:
+  # Add temporal perturbations to test multi-scale robustness
+  noise_std: 0.0
+  delay_steps: 0
+
+experiment:
+  experiment_name: "multi_timescale_003"
+  log_level: "DEBUG"  # Log membrane dynamics
+  use_wandb: true
+  wandb_project: "neuromorphic-multiscale"
+  save_plots: true
+  save_trajectories: true  # For analyzing temporal dynamics
+
+# Expected outcomes:
+# - Different layers specialize for different temporal patterns
+# - Fast layer: quick reactions to immediate sensor changes
+# - Medium layer: short-term sensorimotor mappings
+# - Slow layer: long-term context and strategy
+# - Improved robustness to temporal delays and noise

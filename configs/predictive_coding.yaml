@@ -1,0 +1,50 @@
+# Predictive Coding Experiment
+# UNSUPERVISED REPRESENTATION LEARNING WITH TEMPORAL PREDICTION
+
+# Hypothesis: SNN trained to predict future states will learn
+# structured representations and improve few-shot learning.
+
+model:
+  # Use predictive coding layer
+  predictive_coding: true
+  input_dim: 9
+  hidden_dim: 64
+  prediction_steps: 3  # Predict 3 steps ahead
+
+train:
+  # Unsupervised pretraining phase
+  unsupervised_epochs: 50
+  supervised_epochs: 20
+  batch_size: 128
+  lr: 0.001
+  lr_scheduler: "cosine"
+  early_stopping_patience: 8
+
+  # Two-phase training:
+  # 1. Pretrain on predictive coding (unsupervised)
+  # 2. Fine-tune on classification (supervised)
+
+data:
+  num_sensors: 9
+  n_train_tracks: 100  # More data for unsupervised learning
+  n_test_tracks: 20
+  samples_per_track: 450
+
+encoding:
+  encoding_type: "rate"
+  snn_steps: 25
+
+experiment:
+  experiment_name: "predictive_coding_pretrain_001"
+  log_level: "INFO"
+  use_wandb: true
+  wandb_project: "neuromorphic-predictive"
+  save_plots: true
+  save_models: true
+
+# Novelty:
+# - Unsupervised pretraining with temporal prediction
+# - Hierarchical representation learning
+# - Could enable few-shot adaptation to new tracks
+# - Creates sparse, interpretable representations
+# - Equivalent to "future prediction" objective

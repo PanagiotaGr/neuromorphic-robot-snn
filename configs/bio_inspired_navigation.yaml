@@ -1,0 +1,50 @@
+# Bio-Inspired Navigation Experiment
+# GRID CELLS + HEAD DIRECTION + PLACE CELLS + PATH INTEGRATION
+
+# This is a NOVEL approach combining multiple bio-inspired navigation systems.
+# Hypothesis: Using internal navigation representations will improve robustness
+# and enable transfer to real robot hardware.
+
+model:
+  # Use BioInspiredPolicy (overrides standard models)
+  bio_inspired: true
+  num_hd_cells: 72
+  num_grid_cells: 64
+  num_place_cells: 100
+  hidden_dim: 128
+  use_path_integration: true
+
+train:
+  epochs: 30
+  batch_size: 64
+  lr: 0.001
+  lr_scheduler: "cosine"
+  gradient_clip: 1.0
+  early_stopping_patience: 8
+
+data:
+  num_sensors: 9
+  n_train_tracks: 30
+  n_test_tracks: 12
+  samples_per_track: 450
+
+sim:
+  # Test robustness
+  noise_std: 0.0
+  delay_steps: 0
+  speed: 0.16
+
+experiment:
+  experiment_name: "bio_inspired_navigation_001"
+  log_level: "INFO"
+  use_wandb: true
+  wandb_project: "neuromorphic-bio-navigation"
+  save_plots: true
+  save_animations: true
+
+# Special notes:
+# - Policy uses ONLY internal representations (grid/place/HD cells)
+# - No raw sensor readings used directly
+# - Path integration provides dead reckoning
+# - Expect emergent grid-like activity patterns
+# - Potentially more robust to sensor failures

@@ -1,0 +1,61 @@
+# STDP Unsupervised Learning Experiment
+# SPIKE-TIMING DEPENDENT PLASTICITY WITHOUT BACKPROP
+
+# Hypothesis: SNN can learn useful features using only local plasticity
+# rules (STDP) without gradient-based optimization.
+
+model:
+  use_stdp: true
+  stdp:
+    tau_plus: 20.0  # ms
+    tau_minus: 20.0  # ms
+    A_plus: 0.1
+    A_minus: 0.1
+    weight_limits: [0.0, 1.0]
+
+  # Use simpler architecture for STDP
+  hidden_dim: 128
+  dropout: 0.0  # No dropout for stable STDP
+
+train:
+  # STDP-specific training
+  epochs: 100  # May need many epochs for slow plasticity
+  lr: 0.0  # No gradient-based learning
+  batch_size: 32  # Smaller for temporal processing
+
+  # STDP parameters
+  stdp_learning_rate: 0.01
+  weight_normalization: true  # Keep weights in range
+
+data:
+  num_sensors: 9
+  n_train_tracks: 50
+  n_test_tracks: 12
+  samples_per_track: 450
+
+encoding:
+  encoding_type: "latency"  # Spike timing important for STDP
+  latency_time_window: 25
+
+sim:
+  # Clean data for clear spike timing
+  noise_std: 0.0
+  delay_steps: 0
+
+experiment:
+  experiment_name: "stdp_unsupervised_001"
+  log_level: "DEBUG"
+  use_wandb: true
+  wandb_project: "neuromorphic-stdp"
+  save_plots: true
+  save_spike_patterns: true  # Record spike trains
+  log_spike_stats: true
+
+# Expected outcomes:
+# - Emergent feature selectivity in weights
+# - Unsupervised clustering of sensor patterns
+# - Slower but more biologically plausible learning
+# - Potential for lifelong learning without catastrophic forgetting
+# - Can combine with gradient-based learning (hybrid)
+
+# This is truly novel: Most SNN papers use surrogate gradient, not STDP!
