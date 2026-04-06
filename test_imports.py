@@ -120,6 +120,92 @@ def test_models():
     return True
 
 
+def test_bio_inspired():
+    """Test novel bio-inspired modules"""
+    print("\nTesting bio-inspired modules...")
+
+    import torch
+    from bio_inspired import (
+        BioInspiredPolicy,
+        MultiTimescaleSNN,
+        NeuromodulatedSNN,
+        AttentionDrivenSensing,
+        WorldModelSNN
+    )
+
+    device = torch.device("cpu")
+    batch_size = 4
+
+    # Test BioInspiredPolicy
+    print("  Testing BioInspiredPolicy...")
+    policy = BioInspiredPolicy(num_hd_cells=36, num_grid_cells=32, num_place_cells=50,
+                               hidden_dim=64, action_dim=3).to(device)
+    velocity = torch.randn(batch_size, 2, device=device)
+    theta = torch.rand(batch_size, device=device) * 2 * torch.pi
+    logits, nav_out = policy(velocity, theta)
+    print(f"    ✓ BioInspiredPolicy: logits shape {logits.shape}")
+
+    # Test MultiTimescaleSNN
+    print("  Testing MultiTimescaleSNN...")
+    multi = MultiTimescaleSNN(input_dim=9, hidden_dims=[32, 32, 32],
+                             time_constants=[0.9, 0.95, 0.99], output_dim=3).to(device)
+    spikes = torch.rand(10, batch_size, 9, device=device) > 0.5
+    spikes = spikes.float()
+    out, mem_traces = multi(spikes)
+    print(f"    ✓ MultiTimescaleSNN: output shape {out.shape}, {len(mem_traces)} layers")
+
+    # Test NeuromodulatedSNN
+    print("  Testing NeuromodulatedSNN...")
+    neuromod = NeuromodulatedSNN(input_dim=9, hidden_dim=32, output_dim=3,
+                                 use_neuromodulation=True).to(device)
+    out = neuromod(spikes, compute_neuromodulation=True)
+    print(f"    ✓ NeuromodulatedSNN: output shape {out.shape}")
+
+    # Test AttentionDrivenSensing
+    print("  Testing AttentionDrivenSensing...")
+    ads = AttentionDrivenSensing(base_num_sensors=9, max_virtual_sensors=12).to(device)
+    base_sens = torch.rand(batch_size, 9, device=device)
+    base_angles = torch.linspace(-torch.pi/4, torch.pi/4, 9, device=device)
+    enhanced = ads(base_sens, base_angles)
+    print(f"    ✓ AttentionDrivenSensing: {base_sens.shape} → {enhanced.shape}")
+
+    # Test WorldModelSNN
+    print("  Testing WorldModelSNN...")
+    wm = WorldModelSNN(state_dim=9, action_dim=3).to(device)
+    state = torch.randn(batch_size, 9, device=device)
+    action = torch.randn(batch_size, 3, device=device)
+    next_pred, uncert = wm.transition(state, action)
+    print(f"    ✓ WorldModelSNN: prediction shape {next_pred.shape}, uncertainty {uncert.mean().item():.4f}")
+
+    print("  ✓ All bio-inspired modules working!")
+    return True
+
+
+def test_multi_agent():
+    """Test multi-agent coordination"""
+    print("\nTesting multi-agent coordination...")
+
+    from multi_agent.coordination import MultiAgentSNN, emergent_flocking
+
+    num_agents = 5
+    model = MultiAgentSNN(
+        num_agents=num_agents,
+        agent_config={'input_dim': 6, 'hidden_dim': 16, 'output_dim': 2},
+        enable_communication=True,
+        enable_consensus=True
+    )
+
+    batch_size = 2
+    observations = [torch.randn(batch_size, 6) for _ in range(num_agents)]
+    outputs, info = model(observations)
+
+    print(f"  ✓ Multi-agent forward: {len(outputs)} agents, output shape {outputs[0].shape}")
+    if 'communication' in info:
+        print(f"  ✓ Communication graph computed")
+
+    return True
+
+
 def test_checkpoint():
     """Test checkpoint manager"""
     print("\nTesting checkpoint manager...")
@@ -167,13 +253,34 @@ def main():
     if success and not test_checkpoint():
         success = False
 
+    # Test novel bio-inspired features
+    if success:
+        try:
+            if not test_bio_inspired():
+                success = False
+        except Exception as e:
+            print(f"  ✗ Bio-inspired tests failed: {e}")
+            success = False
+
+    # Test multi-agent
+    if success:
+        try:
+            if not test_multi_agent():
+                success = False
+        except Exception as e:
+            print(f"  ✗ Multi-agent tests failed: {e}")
+            success = False
+
     print("\n" + "="*60)
     if success:
         print("ALL TESTS PASSED! ✓")
-        print("You can now run: python main_enhanced.py --config configs/default.yaml")
+        print("\nYou can now run:")
+        print("  python run.py --config configs/default.yaml")
+        print("  python run_all_experiments.py                    # Test all novel features")
+        print("  python experimental/novel_experiments.py --all  # Run experiments")
     else:
         print("SOME TESTS FAILED ✗")
-        print("Please check the error messages above and install missing dependencies.")
+        print("Please check the error messages above.")
         sys.exit(1)
     print("="*60)
 

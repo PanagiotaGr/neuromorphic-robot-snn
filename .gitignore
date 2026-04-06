@@ -6,12 +6,16 @@ __pycache__/
 # ignore model weights
 *.pt
 *.pth
+*.ckpt
 
 # ignore generated outputs by default
 outputs/*
-configs/*.yaml.bak
 cache/
 wandb/
+**/.ipynb_checkpoints/
+
+# config backups
+configs/*.yaml.bak
 
 # keep selected result files
 !outputs/experiments/
