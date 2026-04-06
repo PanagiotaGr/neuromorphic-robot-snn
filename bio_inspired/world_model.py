@@ -22,6 +22,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from typing import Optional, Tuple, List, Dict
+import snntorch as snn
+from snntorch import surrogate
 
 
 class SNNTransitionModel(nn.Module):
@@ -88,15 +90,16 @@ class SNNTransitionModel(nn.Module):
         combined = combined.unsqueeze(0).repeat(self.snn_steps, 1, 1)
 
         # SNN forward
-        mem = self.snn[1].init_leaky()
+        mem1 = self.snn[1].init_leaky()
+        mem2 = self.snn[3].init_leaky()
         for t in range(self.snn_steps):
             cur = self.snn[0](combined[t])
-            spk, mem = self.snn[1](cur, mem)
-            cur2 = self.snn[2](spk)
-            mem = self.snn[3](cur2, mem) if hasattr(self.snn[3], 'init_leaky') else mem
+            spk1, mem1 = self.snn[1](cur, mem1)
+            cur2 = self.snn[2](spk1)
+            spk2, mem2 = self.snn[3](cur2, mem2)
 
         # Final hidden state
-        final_hidden = mem
+        final_hidden = mem2
 
         # Decode
         next_state = self.state_decoder(final_hidden)

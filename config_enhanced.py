@@ -431,7 +431,7 @@ Examples:
                     setattr(section_obj, key, value)
 
     # Handle special cases
-    if args.train.no_early_stopping:
+    if getattr(args, 'train.no_early_stopping', False):
         config.train.early_stopping_patience = 0
 
     # Sync dimensionality

@@ -1,8 +1,12 @@
 """Energy estimation utilities for SNN and ANN models"""
 import numpy as np
-from typing import Dict, Any
+from typing import Dict, Any, List, Optional
 
 
+import torch
+import torch.nn as nn
+import numpy as np
+from typing import List, Dict, Any, Tuple, Optional
 # Energy constants (approximate, based on academic literature)
 # These are normalized values for relative comparison
 ENERGY_PER_SPIKE = 1.0  # Relative energy cost for one spike

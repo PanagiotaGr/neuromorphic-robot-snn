@@ -300,7 +300,7 @@ class MemoryReplay(nn.Module):
         return replay_inputs, replay_targets
 
 
-class ProgressiveNeural Networks(nn.Module):
+class ProgressiveNeuralNetworks(nn.Module):
     """
     Progressive Neural Networks: Add new columns for each task.
 
@@ -520,7 +520,7 @@ class ContinualLearningSNN(nn.Module):
             self.grad_proj = None
 
         if use_progressive:
-            self.progressive = ProgressiveNeural Networks(base_model)
+            self.progressive = ProgressiveNeuralNetworks(base_model)
         else:
             self.progressive = None
 

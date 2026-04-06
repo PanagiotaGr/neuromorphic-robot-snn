@@ -21,7 +21,12 @@ from torch.utils.data import DataLoader, TensorDataset
 
 from config_enhanced import Config, parse_cli_args
 from dataset import generate_supervised_dataset
-from models import ANNController, SNNController, DeepSNNController, compute_model_stats
+from models import ANNController, SNNController, DeepSNNController
+from utils import compute_model_stats
+
+from models import ANNController, SNNController, DeepSNNController
+from utils import compute_model_stats
+
 from train import evaluate_ann, evaluate_snn
 from simulator import ProceduralTrack, run_episode
 from utils import (
@@ -155,7 +160,8 @@ def benchmark_inference_time(ann_model, snn_model, config, device, input_dim: in
         dummy_input = torch.randn(batch_size, input_dim, device=device)
         # Warmup
         for _ in range(10):
-            spk_in = torch.bernoulli(dummy_input.unsqueeze(0).repeat(config.model.snn_steps, 1, 1))
+            spk_probs = torch.sigmoid(dummy_input).unsqueeze(0).repeat(config.model.snn_steps, 1, 1)
+            spk_in = torch.bernoulli(spk_probs)
             _ = snn_model(spk_in.to(device))
 
         # Benchmark
@@ -163,7 +169,8 @@ def benchmark_inference_time(ann_model, snn_model, config, device, input_dim: in
         times = []
         for _ in range(num_runs):
             start = time.perf_counter()
-            spk_in = torch.bernoulli(dummy_input.unsqueeze(0).repeat(config.model.snn_steps, 1, 1))
+            spk_probs = torch.sigmoid(dummy_input).unsqueeze(0).repeat(config.model.snn_steps, 1, 1)
+            spk_in = torch.bernoulli(spk_probs)
             _ = snn_model(spk_in.to(device))
             torch.cuda.synchronize() if device.type == 'cuda' else None
             end = time.perf_counter()

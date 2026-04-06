@@ -110,9 +110,9 @@ class ExperimentRunner:
         self.plots_dir = base_dir / "plots"
         self.animations_dir = base_dir / "animations"
 
-        self.checkpoint_dir.mkdir(exist_ok=True)
-        self.plots_dir.mkdir(exist_ok=True)
-        self.animations_dir.mkdir(exist_ok=True)
+        self.checkpoint_dir.mkdir(parents=True, exist_ok=True)
+        self.plots_dir.mkdir(parents=True, exist_ok=True)
+        self.animations_dir.mkdir(parents=True, exist_ok=True)
 
         # Save config to output directory
         config_path = base_dir / "config_used.yaml"
@@ -188,7 +188,7 @@ class ExperimentRunner:
 
         # SNN Model - choose architecture based on config
         # Use deep architecture if explicitly requested or if hidden_dim is large
-        if self.config.model.get('deep', False) or (self.config.model.hidden_dim >= 192 and self.config.model.use_batch_norm):
+        if getattr(self.config.model, 'deep', False) or (self.config.model.hidden_dim >= 192 and self.config.model.use_batch_norm):
             if hasattr(SNNController, 'deep'):
                 snn_model = SNNController(
                     input_dim=self.config.model.input_dim,
@@ -326,8 +326,7 @@ class ExperimentRunner:
         # Plot training curves
         if self.config.experiment.save_plots:
             plot_training_curves(
-                ann_history, snn_history,
-                save_path=self.plots_dir / "training_curves.png"
+                ann_history, snn_history
             )
 
         return ann_history, snn_history

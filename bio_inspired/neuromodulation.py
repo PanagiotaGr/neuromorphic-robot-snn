@@ -17,6 +17,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from typing import Dict, Optional, Tuple, List
+import snntorch as snn
+from snntorch import surrogate
 
 
 class Neuromodulator(nn.Module):
@@ -286,9 +288,7 @@ class NeuromodulatedSNN(nn.Module):
                 num_synapses=input_dim * hidden_dim + hidden_dim * output_dim
             )
             self.meta_controller = MetaPlasticityController(
-                network_size=hidden_dim + output_dim,
-                num_tasks=num_tasks
-            )
+                network_size=hidden_dim + output_dim)
         else:
             self.neuromodulator = None
             self.gated_plasticity = None

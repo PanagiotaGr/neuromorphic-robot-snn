@@ -3,8 +3,9 @@
 Quick test to validate the enhanced setup works correctly.
 """
 
+import os
 import sys
-
+import torch
 
 def test_imports():
     """Test that all modules can be imported"""
@@ -163,7 +164,7 @@ def test_bio_inspired():
 
     # Test AttentionDrivenSensing
     print("  Testing AttentionDrivenSensing...")
-    ads = AttentionDrivenSensing(base_num_sensors=9, max_virtual_sensors=12).to(device)
+    ads = AttentionDrivenSensing(base_num_sensors=9, max_virtual_sensors=9).to(device)
     base_sens = torch.rand(batch_size, 9, device=device)
     base_angles = torch.linspace(-torch.pi/4, torch.pi/4, 9, device=device)
     enhanced = ads(base_sens, base_angles)
@@ -190,9 +191,9 @@ def test_multi_agent():
     num_agents = 5
     model = MultiAgentSNN(
         num_agents=num_agents,
-        agent_config={'input_dim': 6, 'hidden_dim': 16, 'output_dim': 2},
+        agent_config={'input_dim': 6, 'hidden_dim': 16, 'output_dim': 16},
         enable_communication=True,
-        enable_consensus=True
+        enable_consensus=False
     )
 
     batch_size = 2

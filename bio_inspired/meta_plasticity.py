@@ -146,7 +146,7 @@ class PlasticityRuleNetwork(nn.Module):
         self.register_buffer('eligibility', None)
 
     def forward(self, pre_spike: torch.Tensor, post_spike: torch.Tensor,
-                weight: torch.Tensor, reward: Optional[tor.Tensor] = None) -> torch.Tensor:
+                weight: torch.Tensor, reward: Optional[torch.Tensor] = None) -> torch.Tensor:
         """
         Compute weight update.
 
