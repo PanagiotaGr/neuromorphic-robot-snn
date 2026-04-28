@@ -1,8 +1,6 @@
-# 🧪 Experimental Results Report
 
-Generated: 2026-04-06 16:54:18
 
-## 📊 Summary
+## Summary
 
 ### Quick Benchmark (Fast Run)
 - **ANN Accuracy**: 62.67%
@@ -11,7 +9,7 @@ Generated: 2026-04-06 16:54:18
 - **ANN Train Time**: 0.7s
 - **SNN Train Time**: 0.3s
 
-## 📈 Performance Comparison
+## Performance Comparison
 
 ### Model Metrics
 | Metric | ANN | SNN | Ratio (SNN/ANN) |
@@ -22,26 +20,26 @@ Generated: 2026-04-06 16:54:18
 | Inference (ms) | 0 | 0 | 7.15x |
 | Energy (relative) | 549 | 19,413 | 35.33x |
 
-## 🔬 Novel Features Status
+## Novel Features Status
 
 | Feature | Status | Notes |
 |---------|--------|-------|
 
-## 📝 Raw Data
+## Raw Data
 
 All detailed results are saved in:
 - `outputs/quick_benchmark/results.json` - Fast benchmark
 - `outputs/baseline_comparison/` - Full training curves
 - `outputs/full_experiments/comprehensive_results.json` - All novel features
 
-## 🎯 Conclusions
+## Conclusions
 
-⚠️ **ANN outperforms SNN** by 16.0% (expected for shallow architectures)
-✅ **Energy efficiency confirmed**: SNN uses -3433.2% less energy
+**ANN outperforms SNN** by 16.0% (expected for shallow architectures)
+**Energy efficiency confirmed**: SNN uses -3433.2% less energy
 
-## 🚀 Next Steps
+##  Next Steps
 
-1. ✅ Run full experiments: `python run_all_experiments.py`
+1. Run full experiments: `python run_all_experiments.py`
 2. 📊 Analyze results with Jupyter notebooks
 3. 📝 Write paper draft incorporating these numbers
 4. 🔬 Visualize emergent behaviors (grid cells, etc.)
