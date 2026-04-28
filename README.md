@@ -1,4 +1,4 @@
-# 📄 Neuromorphic Control of Embodied Agents
+#  Neuromorphic Control of Embodied Agents
 
 ## A Comparative Study of Spiking and Artificial Neural Networks
 
